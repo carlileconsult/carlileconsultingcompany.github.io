@@ -263,8 +263,7 @@
           return false;
         }
         const out = await res.json().catch(()=>null);
-        const msg = out && out.errors ? out.errors.map(x=>x.message).join('
-') : 'There was a problem submitting the form. Please email support@carlileconsultingcompany.com.';
+        const msg = out && out.errors ? out.errors.map(x=>x.message).join('') : 'There was a problem submitting the form. Please email support@carlileconsultingcompany.com.';
         alert(msg);
       } catch(err){
         alert('Network error. Please email support@carlileconsultingcompany.com.');
