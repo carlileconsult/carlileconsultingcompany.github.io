@@ -97,6 +97,8 @@
       .mobile-open nav ul{display:flex;flex-direction:column;gap:12px;position:absolute;left:16px;right:16px;top:64px;padding:16px;border-radius:14px;background:#0b1220;border:1px solid rgba(255,255,255,.12)}
     }
   </style>
+  <link rel="canonical" href="https://www.carlileconsultingcompany.com/" />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 </head>
 <body>
   <a class="sr-only" href="#main">Skip to content</a>
@@ -207,7 +209,7 @@
       <div class="container">
         <h2>Request Support</h2>
         <p class="muted">Tell me what’s going on and how to reach you. I’ll reply with next steps and an estimate.</p>
-        <form id="contact-form" action="https://formspree.io/f/mdklwoqv" method="POST">
+        <form id="contact-form"$1 onsubmit="return handleSubmit(event)">
           <div>
             <label for="name">Name</label>
             <input id="name" name="name" type="text" required placeholder="Jane Doe" />
@@ -224,10 +226,15 @@
             <label for="message">How can I help?</label>
             <textarea id="message" name="message" rows="5" required placeholder="Briefly describe the issue and your preferred times."></textarea>
           </div>
-          <input type="hidden" name="_subject" value="New support request from website" />
+          $1
+          <!-- Honeypot field to reduce spam -->
+          <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true" />
           <button class="btn btn-cta" type="submit">Send Request</button>
           <p class="small">Prefer email? <a href="mailto:support@carlileconsultingcompany.com">support@carlileconsultingcompany.com</a></p>
         </form>
+        <noscript>
+          <p class="small">After you submit, you’ll see a simple confirmation page from our form provider. You can return here with your browser’s back button. For urgent requests, email <a href="mailto:support@carlileconsultingcompany.com">support@carlileconsultingcompany.com</a>.</p>
+        </noscript>
       </div>
     </section>
   </main>
@@ -241,32 +248,33 @@
 
   <script>
     // Update copyright year
-    document.getElementById('y').textContent = new Date().getFullYear();
+    const y = document.getElementById('y');
+    if (y) y.textContent = new Date().getFullYear();
 
-    // Intercept submit and POST via fetch, then redirect to thanks.html on success
-    const form = document.getElementById('contact-form');
-    if (form) {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // Formspree AJAX submit + redirect to /thanks.html
+    window.handleSubmit = async function(e){
+      e.preventDefault();
+      const form = document.getElementById('contact-form');
+      const submitBtn = form?.querySelector('button[type="submit"]');
+      if (!form) return false;
+      try {
+        if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
         const data = new FormData(form);
-        try {
-          const res = await fetch(form.action, {
-            method: 'POST',
-            body: data,
-            headers: { 'Accept': 'application/json' }
-          });
-          if (res.ok) {
-            window.location.href = '/thanks.html';
-          } else {
-            const out = await res.json().catch(() => null);
-            const msg = out && out.errors ? out.errors.map(err => err.message).join('
-') : 'There was a problem submitting the form. Please email support@carlileconsultingcompany.com.';
-            alert(msg);
-          }
-        } catch (err) {
-          alert('Network error. Please email support@carlileconsultingcompany.com.');
+        const res = await fetch(form.action, { method: form.method || 'POST', body: data, headers: { 'Accept': 'application/json' } });
+        if (res.ok){
+          window.location.href = '/thanks.html';
+          return false;
         }
-      });
+        const out = await res.json().catch(()=>null);
+        const msg = out && out.errors ? out.errors.map(x=>x.message).join('
+') : 'There was a problem submitting the form. Please email support@carlileconsultingcompany.com.';
+        alert(msg);
+      } catch(err){
+        alert('Network error. Please email support@carlileconsultingcompany.com.');
+      } finally {
+        if (submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'Send Request'; }
+      }
+      return false;
     }
   </script>
 </body>
