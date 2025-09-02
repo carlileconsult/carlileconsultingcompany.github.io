@@ -1,1 +1,255 @@
-Creating an index file
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carlile Consulting Company | Reliable IT Support in Tallahassee</title>
+  <meta name="description" content="Home & small‑business IT support in Tallahassee and Leon County. Wi‑Fi, Microsoft 365/Google Workspace, backups, networking, cybersecurity basics, and remote help." />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Carlile Consulting Company – Reliable IT Support" />
+  <meta property="og:description" content="Local IT help for homes & small businesses in Tallahassee." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.carlileconsultingcompany.com/" />
+  <meta property="og:image" content="/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicon placeholders (replace files when ready) -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <style>
+    :root{
+      --bg: #0b1220;      /* page background */
+      --panel:#0f172a;    /* header/footer panels */
+      --muted:#8193b2;    /* secondary text */
+      --fg:#e7edf7;       /* primary text */
+      --brand:#60a5fa;    /* accents */
+      --cta:#22c55e;      /* call-to-action */
+      --card:#111827;     /* card background */
+      --ring: rgba(96,165,250,.5);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;}
+    a{color:var(--brand);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1100px;margin-inline:auto;padding:0 20px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,var(--panel),rgba(15,23,42,.85));backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#a78bfa);display:grid;place-items:center;box-shadow:var(--shadow)}
+    .logo span{font-weight:700}
+    nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0}
+    .btn{display:inline-block;padding:10px 16px;border-radius:12px;font-weight:600;border:1px solid rgba(255,255,255,.08);background:#0b1220}
+    .btn:hover{border-color:rgba(255,255,255,.25)}
+    .btn-cta{background:var(--cta);border:none;color:#09210f}
+    .btn-cta:hover{filter:brightness(1.05)}
+    .mobile-toggle{display:none}
+
+    /* Hero */
+    .hero{padding:64px 0 40px;background:radial-gradient(80% 120% at 50% -10%,rgba(96,165,250,.25),transparent 60%), radial-gradient(70% 100% at 90% 10%,rgba(34,197,94,.18),transparent 60%)}
+    .hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 12px}
+    .hero p{color:var(--muted);margin:0 0 20px}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+    .badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:14px;color:#cdd6e6}
+
+    /* Sections */
+    section{padding:56px 0;border-top:1px solid rgba(255,255,255,.06)}
+    h2{font-size:clamp(22px,3.6vw,32px);margin:0 0 18px}
+    .muted{color:var(--muted)}
+
+    /* Services grid */
+    .grid{display:grid;gap:18px}
+    @media (min-width:720px){.grid{grid-template-columns:repeat(3,1fr)}}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .card h3{margin:4px 0 8px}
+    .price{font-weight:700}
+    .card ul{padding-left:18px;margin:6px 0 0}
+
+    /* CTA panel */
+    .panel{background:linear-gradient(135deg,rgba(96,165,250,.12),rgba(34,197,94,.10));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:22px;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+    /* About */
+    .about{display:grid;gap:24px}
+    @media (min-width:900px){.about{grid-template-columns:1.2fr .8fr}}
+    .about .xp{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px}
+
+    /* Contact */
+    form{display:grid;gap:12px;max-width:640px}
+    label{font-weight:600}
+    input,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:var(--fg)}
+    input:focus,textarea:focus{outline:2px solid var(--ring);border-color:transparent}
+
+    /* Footer */
+    footer{background:var(--panel);padding:30px 0;border-top:1px solid rgba(255,255,255,.08)}
+    .foot{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .small{font-size:14px;color:#a9b7d0}
+
+    /* Mobile nav */
+    @media (max-width:720px){
+      nav ul{display:none}
+      .mobile-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1220}
+      .mobile-open nav ul{display:flex;flex-direction:column;gap:12px;position:absolute;left:16px;right:16px;top:64px;padding:16px;border-radius:14px;background:#0b1220;border:1px solid rgba(255,255,255,.12)}
+    }
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><span>CC</span></div>
+        <strong>Carlile Consulting Company</strong>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.body.classList.toggle('mobile-open')">☰</button>
+      <nav aria-label="Primary">
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a class="btn btn-cta" href="#contact">Request Support</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container">
+        <h1>Reliable IT Support for Homes & Small Businesses in Tallahassee</h1>
+        <p class="muted">20+ years of solving real‑world tech problems — from Wi‑Fi dead zones and printers to Microsoft 365, backups, and small‑business networks.</p>
+        <div class="badges">
+          <span class="badge">Remote & On‑Site</span>
+          <span class="badge">Flat‑Rate Packages</span>
+          <span class="badge">Emergency Support</span>
+          <span class="badge">Microsoft 365 · Google Workspace</span>
+        </div>
+        <p>
+          <a class="btn btn-cta" href="#contact">Book a Fix</a>
+          <a class="btn" href="#services">See Services</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <h2>Services & Simple Pricing</h2>
+        <p class="muted">Clear, no‑surprise pricing. Remote sessions available for many issues.</p>
+        <div class="grid">
+          <article class="card">
+            <h3>Home Wi‑Fi Tune‑Up <span class="price">$99</span></h3>
+            <p class="muted">Fix dead zones, secure your network, and speed up streaming.</p>
+            <ul>
+              <li>Router optimization & firmware check</li>
+              <li>Channel/placement recommendations</li>
+              <li>Parental controls & guest network setup</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Small Business Essentials <span class="price">Starting $149</span></h3>
+            <p class="muted">Keep your team productive with reliable, secure systems.</p>
+            <ul>
+              <li>Microsoft 365 or Google Workspace setup</li>
+              <li>Backup strategy & device security basics</li>
+              <li>Printer/file sharing & onsite support</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Remote Support Session <span class="price">$69/hr</span></h3>
+            <p class="muted">Fast help without a visit — perfect for troubleshooting.</p>
+            <ul>
+              <li>PC/Mac cleanup & updates</li>
+              <li>Email/calendar issues</li>
+              <li>Software installs & quick fixes</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="panel" style="margin-top:22px">
+          <div>
+            <strong>Need ongoing help?</strong>
+            <div class="muted">Ask about monthly care plans for businesses starting at <b>$49/user</b>.</div>
+          </div>
+          <a class="btn btn-cta" href="#contact">Get a Quote</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container about">
+        <div>
+          <h2>About Carlile Consulting Company</h2>
+          <p class="muted">I’ve spent over two decades building and supporting systems for organizations large and small. Now I help neighbors and local businesses in Tallahassee make technology simple, fast, and secure.</p>
+          <ul>
+            <li>20+ years in software & IT — Microsoft, .NET, networks</li>
+            <li>Hands‑on with Wi‑Fi, backups, cybersecurity basics, and automation</li>
+            <li>Friendly, plain‑English support with clear pricing</li>
+          </ul>
+        </div>
+        <aside class="xp">
+          <h3>Areas Served</h3>
+          <p class="muted">Tallahassee • Leon County • Nearby areas</p>
+          <h3>Hours</h3>
+          <p class="muted">Weeknights & Saturdays by appointment</p>
+          <h3>Tech Stack</h3>
+          <p class="muted">Windows • macOS • Microsoft 365 • Google Workspace • Routers/Access Points • Backups</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <h2>Request Support</h2>
+        <p class="muted">Tell me what’s going on and how to reach you. I’ll reply with next steps and an estimate.</p>
+        <form id="contact-form" action="https://formspree.io/f/your-id-here" method="POST">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required placeholder="Jane Doe" />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com" />
+          </div>
+          <div>
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel" placeholder="(850) 555‑1234" />
+          </div>
+          <div>
+            <label for="message">How can I help?</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Briefly describe the issue and your preferred times."></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="New support request from website" />
+          <button class="btn btn-cta" type="submit">Send Request</button>
+          <p class="small">Prefer email? <a href="mailto:support@carlileconsultingcompany.com">support@carlileconsultingcompany.com</a></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div class="small">© <span id="y"></span> Carlile Consulting Company • Tallahassee, FL</div>
+      <div class="small">Serving Tallahassee, Leon County & surrounding areas</div>
+    </div>
+  </footer>
+
+  <script>
+    // Update copyright year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Basic client-side validation + success UX for Formspree (optional)
+    const form = document.getElementById('contact-form');
+    form?.addEventListener('submit', function(e){
+      if(!form.checkValidity()) return; // let browser show validation
+      // Optionally show a quick feedback message
+      setTimeout(()=>{ alert('Thanks! Your request was sent. I\'ll get back to you shortly.'); }, 100);
+    });
+  </script>
+</body>
+</html>
