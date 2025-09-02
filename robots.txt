@@ -1,0 +1,8 @@
+<!-- =========================
+CREATE A NEW FILE: robots.txt
+Place this at the repo root
+========================= -->
+
+User-agent: *
+Allow: /
+Sitemap: https://www.carlileconsultingcompany.com/sitemap.xml
