@@ -243,13 +243,31 @@
     // Update copyright year
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Basic client-side validation + success UX for Formspree (optional)
+    // Intercept submit and POST via fetch, then redirect to thanks.html on success
     const form = document.getElementById('contact-form');
-    form?.addEventListener('submit', function(e){
-      if(!form.checkValidity()) return; // let browser show validation
-      // Optionally show a quick feedback message
-      setTimeout(()=>{ alert('Thanks! Your request was sent. I\'ll get back to you shortly.'); }, 100);
-    });
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            window.location.href = '/thanks.html';
+          } else {
+            const out = await res.json().catch(() => null);
+            const msg = out && out.errors ? out.errors.map(err => err.message).join('
+') : 'There was a problem submitting the form. Please email support@carlileconsultingcompany.com.';
+            alert(msg);
+          }
+        } catch (err) {
+          alert('Network error. Please email support@carlileconsultingcompany.com.');
+        }
+      });
+    }
   </script>
 </body>
 </html>
