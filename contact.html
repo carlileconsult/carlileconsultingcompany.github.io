@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact | Start a Project | Carlile Consulting Company</title>
+  <meta name="description" content="Contact Carlile Consulting Company to start a practical IT, software, automation, or AI consulting project." />
+  <link rel="canonical" href="https://www.carlileconsultingcompany.com/contact.html" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">CC</span><span>Carlile Consulting Company</span></a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation">☰</button>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="/">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a class="btn btn-primary active" href="contact.html">Start a Project</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container split">
+        <div>
+          <h1>Contact / Start a Project</h1>
+          <p class="muted">Share a quick overview of your priorities and challenges. We will follow up with suggested next steps and a practical starting point.</p>
+        </div>
+        <aside class="card">
+          <h3>Best for teams that need help with:</h3>
+          <ul class="checklist">
+            <li>Stabilizing IT and business systems</li>
+            <li>Improving software and workflow efficiency</li>
+            <li>Planning automation and AI initiatives</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section>
+      <div class="container split">
+        <div>
+          <h2>Project request form</h2>
+          <form id="contact-form" action="https://formspree.io/f/mdklwoqv" method="POST">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required />
+
+            <label for="email">Work email</label>
+            <input id="email" name="email" type="email" required />
+
+            <label for="company">Company</label>
+            <input id="company" name="company_name" type="text" />
+
+            <label for="priority">Primary need</label>
+            <select id="priority" name="primary_need" required>
+              <option value="">Select one</option>
+              <option>IT consulting</option>
+              <option>Software consulting</option>
+              <option>Workflow automation</option>
+              <option>AI readiness / implementation</option>
+              <option>Not sure yet</option>
+            </select>
+
+            <label for="message">Project details</label>
+            <textarea id="message" name="message" rows="6" required></textarea>
+
+            <input type="hidden" name="_subject" value="New consulting project request" />
+            <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-10000px;" />
+
+            <button class="btn btn-primary" type="submit">Send project request</button>
+          </form>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h3>What happens next</h3>
+            <ol>
+              <li>Initial review of your request</li>
+              <li>Follow-up to clarify scope and priorities</li>
+              <li>Recommended first phase and timeline</li>
+            </ol>
+          </div>
+          <div class="panel" style="margin-top:14px;">
+            <h3>Future AI intake assistant (planned)</h3>
+            <p class="muted">This site will later include an AI-guided intake option to collect project details and qualify leads before scheduling.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <div class="small">© <span id="year"></span> Carlile Consulting Company</div>
+      <div class="small">Start with a focused project and expand in phases.</div>
+    </div>
+  </footer>
+  <script src="assets/site.js" defer></script>
+</body>
+</html>
