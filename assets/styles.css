@@ -143,9 +143,30 @@ img { max-width: 100%; }
 }
 
 .hero {
+  position: relative;
+  overflow: hidden;
   padding: 62px 0 42px;
   background: linear-gradient(180deg, #f9fbff, #f3f6fb);
   border-bottom: 1px solid var(--line);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  top: -180px;
+  right: -140px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 40%, rgba(31, 78, 163, 0.11), rgba(31, 78, 163, 0) 55%),
+    radial-gradient(circle at 65% 65%, rgba(15, 118, 110, 0.09), rgba(15, 118, 110, 0) 62%);
+  pointer-events: none;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 1;
 }
 
 h1 {
@@ -212,6 +233,59 @@ section {
   border-radius: var(--radius);
   padding: 18px;
   box-shadow: var(--shadow);
+}
+
+.service-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--surface-muted);
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+.icon-badge svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.section-visual {
+  width: 112px;
+  height: 84px;
+  color: #8ea6cf;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.section-visual svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
 }
 
 .card ul,
@@ -299,4 +373,14 @@ select:focus {
   }
 
   body.mobile-open .nav-menu { display: flex; }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-visual {
+    width: 92px;
+    height: 68px;
+  }
 }
