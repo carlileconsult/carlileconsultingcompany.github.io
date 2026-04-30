@@ -70,22 +70,9 @@
         <div class="ai-advisor__status" aria-live="polite"></div>
         <div class="ai-advisor__response" hidden></div>
 
-        <div class="ai-advisor__cta">
-          <a class="btn btn-primary" href="contact.html">Schedule Discovery Call</a>
+        <div class="ai-advisor__cta" hidden>
+          <a class="btn" href="discovery.html">Schedule a Discovery Call</a>
         </div>
-
-        <form class="ai-advisor__lead-form" novalidate>
-          <h3>Get a tailored follow-up</h3>
-          <label for="ai-name">Name</label>
-          <input id="ai-name" name="name" autocomplete="name" required />
-          <label for="ai-email">Work email</label>
-          <input id="ai-email" name="email" type="email" autocomplete="email" required />
-          <label for="ai-company">Company</label>
-          <input id="ai-company" name="company" autocomplete="organization" required />
-          <label for="ai-notes">Project notes (optional)</label>
-          <textarea id="ai-notes" name="notes" rows="2"></textarea>
-          <button type="submit" class="btn">Send details</button>
-        </form>
       </section>
     `;
     document.body.appendChild(widget);
@@ -94,9 +81,9 @@
     const panel = widget.querySelector('.ai-advisor__panel');
     const closeButton = widget.querySelector('.ai-advisor__close');
     const chatForm = widget.querySelector('.ai-advisor__chat-form');
-    const leadForm = widget.querySelector('.ai-advisor__lead-form');
     const status = widget.querySelector('.ai-advisor__status');
     const response = widget.querySelector('.ai-advisor__response');
+    const cta = widget.querySelector('.ai-advisor__cta');
 
     function openPanel() {
       panel.hidden = false;
@@ -124,6 +111,7 @@
 
       status.textContent = 'Thinking...';
       response.hidden = true;
+      cta.hidden = true;
 
       try {
         const res = await fetch(`${apiBase}/advisor/chat`, {
@@ -137,49 +125,13 @@
         renderResponse(response, data);
         response.hidden = false;
         status.textContent = '';
+        cta.hidden = false;
       } catch (error) {
         console.warn('AI advisor request failed.', error);
         status.textContent = 'Sorry, the AI Advisor is temporarily unavailable. Please try again in a moment or schedule a discovery call.';
       }
     });
 
-    leadForm.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      const submitButton = leadForm.querySelector('button[type="submit"]');
-      const payload = {
-        name: leadForm.name.value.trim(),
-        email: leadForm.email.value.trim(),
-        company: leadForm.company.value.trim(),
-        notes: leadForm.notes.value.trim(),
-        source: 'website_widget'
-      };
-
-      if (!payload.name || !payload.email || !payload.company) {
-        status.textContent = 'Please complete name, work email, and company.';
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = 'Sending...';
-
-      try {
-        const res = await fetch(`${apiBase}/lead`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error(`Lead submit failed (${res.status})`);
-        leadForm.reset();
-        status.textContent = 'Thank you. We will follow up soon.';
-      } catch (error) {
-        console.warn('AI advisor lead submit failed.', error);
-        status.textContent = 'Sorry, we could not submit your details right now. Please use the contact page.';
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Send details';
-      }
-    });
   }
 
   function renderResponse(container, data) {
