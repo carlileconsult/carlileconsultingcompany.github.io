@@ -47,7 +47,7 @@
   initAiAdvisorWidget();
 
   function initAiAdvisorWidget() {
-    const apiBase = window.CARLILE_AI_API_BASE || 'https://carlile-ai-advisor.onrender.com/api';
+    const apiBase = window.CARLILE_AI_API_BASE || 'https://carlile-ai-advisor-api.onrender.com/api';
     const widget = document.createElement('aside');
     widget.className = 'ai-advisor';
     widget.innerHTML = `
