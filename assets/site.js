@@ -132,13 +132,14 @@
           body: JSON.stringify({ message, source: 'website_widget' })
         });
 
-        if (!res.ok) throw new Error('Service unavailable');
+        if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
         const data = await res.json();
         renderResponse(response, data);
         response.hidden = false;
         status.textContent = '';
       } catch (error) {
-        status.textContent = 'We could not reach the advisor right now. Please try again or schedule a discovery call.';
+        console.warn('AI advisor request failed.', error);
+        status.textContent = 'Sorry, the AI Advisor is temporarily unavailable. Please try again in a moment or schedule a discovery call.';
       }
     });
 
@@ -168,11 +169,12 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error('Lead submit failed');
+        if (!res.ok) throw new Error(`Lead submit failed (${res.status})`);
         leadForm.reset();
         status.textContent = 'Thank you. We will follow up soon.';
       } catch (error) {
-        status.textContent = 'Lead form could not be submitted right now. Please use the contact page.';
+        console.warn('AI advisor lead submit failed.', error);
+        status.textContent = 'Sorry, we could not submit your details right now. Please use the contact page.';
       } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Send details';
@@ -181,9 +183,14 @@
   }
 
   function renderResponse(container, data) {
-    const summary = data.summary || 'Here are practical next steps based on your request.';
+    const summary = getFirstText(data.summary, data.responseSummary, data.message) || 'Here are practical next steps based on your request.';
+    const opportunityArea = getFirstText(data.opportunityArea);
+    const recommendedNextStep = getFirstText(data.recommendedNextStep);
+    const consultingFit = getFirstText(data.consultingFit);
+    const callToAction = getFirstText(data.callToAction);
     const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
     const risks = Array.isArray(data.risks) ? data.risks : [];
+    const followUpQuestions = normalizeList(data.followUpQuestions);
 
     const recommendationsHtml = recommendations.length
       ? `<h3>Recommended next steps</h3><ul>${recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
@@ -193,14 +200,54 @@
       ? `<h3>Implementation considerations</h3><ul>${risks.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
       : '';
 
+    const opportunityAreaHtml = opportunityArea
+      ? `<h3>Opportunity area</h3><p>${escapeHtml(opportunityArea)}</p>`
+      : '';
+
+    const nextStepHtml = recommendedNextStep
+      ? `<h3>Recommended next step</h3><p>${escapeHtml(recommendedNextStep)}</p>`
+      : '';
+
+    const consultingFitHtml = consultingFit
+      ? `<h3>Consulting fit</h3><p>${escapeHtml(consultingFit)}</p>`
+      : '';
+
+    const followUpQuestionsHtml = followUpQuestions.length
+      ? `<h3>Helpful follow-up questions</h3><ul>${followUpQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+      : '';
+
+    const callToActionHtml = callToAction
+      ? `<h3>Suggested action</h3><p>${escapeHtml(callToAction)}</p>`
+      : '';
+
     container.innerHTML = `
       <article>
         <h3>Advisor summary</h3>
         <p>${escapeHtml(summary)}</p>
+        ${opportunityAreaHtml}
+        ${nextStepHtml}
+        ${consultingFitHtml}
         ${recommendationsHtml}
         ${risksHtml}
+        ${followUpQuestionsHtml}
+        ${callToActionHtml}
       </article>
     `;
+  }
+
+  function getFirstText() {
+    for (const value of arguments) {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+    }
+    return '';
+  }
+
+  function normalizeList(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter(Boolean);
   }
 
   function escapeHtml(value) {
