@@ -70,22 +70,9 @@
         <div class="ai-advisor__status" aria-live="polite"></div>
         <div class="ai-advisor__response" hidden></div>
 
-        <div class="ai-advisor__cta">
-          <a class="btn btn-primary" href="contact.html">Schedule Discovery Call</a>
+        <div class="ai-advisor__cta" hidden>
+          <a class="btn" href="discovery.html">Schedule a Discovery Call</a>
         </div>
-
-        <form class="ai-advisor__lead-form" novalidate>
-          <h3>Get a tailored follow-up</h3>
-          <label for="ai-name">Name</label>
-          <input id="ai-name" name="name" autocomplete="name" required />
-          <label for="ai-email">Work email</label>
-          <input id="ai-email" name="email" type="email" autocomplete="email" required />
-          <label for="ai-company">Company</label>
-          <input id="ai-company" name="company" autocomplete="organization" required />
-          <label for="ai-notes">Project notes (optional)</label>
-          <textarea id="ai-notes" name="notes" rows="2"></textarea>
-          <button type="submit" class="btn">Send details</button>
-        </form>
       </section>
     `;
     document.body.appendChild(widget);
@@ -94,9 +81,9 @@
     const panel = widget.querySelector('.ai-advisor__panel');
     const closeButton = widget.querySelector('.ai-advisor__close');
     const chatForm = widget.querySelector('.ai-advisor__chat-form');
-    const leadForm = widget.querySelector('.ai-advisor__lead-form');
     const status = widget.querySelector('.ai-advisor__status');
     const response = widget.querySelector('.ai-advisor__response');
+    const cta = widget.querySelector('.ai-advisor__cta');
 
     function openPanel() {
       panel.hidden = false;
@@ -124,6 +111,7 @@
 
       status.textContent = 'Thinking...';
       response.hidden = true;
+      cta.hidden = true;
 
       try {
         const res = await fetch(`${apiBase}/advisor/chat`, {
@@ -132,58 +120,29 @@
           body: JSON.stringify({ message, source: 'website_widget' })
         });
 
-        if (!res.ok) throw new Error('Service unavailable');
+        if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
         const data = await res.json();
         renderResponse(response, data);
         response.hidden = false;
         status.textContent = '';
+        cta.hidden = false;
       } catch (error) {
-        status.textContent = 'We could not reach the advisor right now. Please try again or schedule a discovery call.';
+        console.warn('AI advisor request failed.', error);
+        status.textContent = 'Sorry, the AI Advisor is temporarily unavailable. Please try again in a moment or schedule a discovery call.';
       }
     });
 
-    leadForm.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      const submitButton = leadForm.querySelector('button[type="submit"]');
-      const payload = {
-        name: leadForm.name.value.trim(),
-        email: leadForm.email.value.trim(),
-        company: leadForm.company.value.trim(),
-        notes: leadForm.notes.value.trim(),
-        source: 'website_widget'
-      };
-
-      if (!payload.name || !payload.email || !payload.company) {
-        status.textContent = 'Please complete name, work email, and company.';
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = 'Sending...';
-
-      try {
-        const res = await fetch(`${apiBase}/lead`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error('Lead submit failed');
-        leadForm.reset();
-        status.textContent = 'Thank you. We will follow up soon.';
-      } catch (error) {
-        status.textContent = 'Lead form could not be submitted right now. Please use the contact page.';
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Send details';
-      }
-    });
   }
 
   function renderResponse(container, data) {
-    const summary = data.summary || 'Here are practical next steps based on your request.';
+    const summary = getFirstText(data.summary, data.responseSummary, data.message) || 'Here are practical next steps based on your request.';
+    const opportunityArea = getFirstText(data.opportunityArea);
+    const recommendedNextStep = getFirstText(data.recommendedNextStep);
+    const consultingFit = getFirstText(data.consultingFit);
+    const callToAction = getFirstText(data.callToAction);
     const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
     const risks = Array.isArray(data.risks) ? data.risks : [];
+    const followUpQuestions = normalizeList(data.followUpQuestions);
 
     const recommendationsHtml = recommendations.length
       ? `<h3>Recommended next steps</h3><ul>${recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
@@ -193,14 +152,54 @@
       ? `<h3>Implementation considerations</h3><ul>${risks.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
       : '';
 
+    const opportunityAreaHtml = opportunityArea
+      ? `<h3>Opportunity area</h3><p>${escapeHtml(opportunityArea)}</p>`
+      : '';
+
+    const nextStepHtml = recommendedNextStep
+      ? `<h3>Recommended next step</h3><p>${escapeHtml(recommendedNextStep)}</p>`
+      : '';
+
+    const consultingFitHtml = consultingFit
+      ? `<h3>Consulting fit</h3><p>${escapeHtml(consultingFit)}</p>`
+      : '';
+
+    const followUpQuestionsHtml = followUpQuestions.length
+      ? `<h3>Helpful follow-up questions</h3><ul>${followUpQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+      : '';
+
+    const callToActionHtml = callToAction
+      ? `<h3>Suggested action</h3><p>${escapeHtml(callToAction)}</p>`
+      : '';
+
     container.innerHTML = `
       <article>
         <h3>Advisor summary</h3>
         <p>${escapeHtml(summary)}</p>
+        ${opportunityAreaHtml}
+        ${nextStepHtml}
+        ${consultingFitHtml}
         ${recommendationsHtml}
         ${risksHtml}
+        ${followUpQuestionsHtml}
+        ${callToActionHtml}
       </article>
     `;
+  }
+
+  function getFirstText() {
+    for (const value of arguments) {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+    }
+    return '';
+  }
+
+  function normalizeList(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter(Boolean);
   }
 
   function escapeHtml(value) {
