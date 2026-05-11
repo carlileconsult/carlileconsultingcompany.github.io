@@ -59,20 +59,14 @@
           <h2>Carlile AI Advisor</h2>
           <button type="button" class="ai-advisor__close" aria-label="Close advisor">×</button>
         </div>
-        <p class="ai-advisor__intro">Describe your goals or challenges to get practical guidance and next steps.</p>
+        <div class="ai-advisor__chat">
+          <div class="ai-advisor__messages" aria-live="polite"></div>
 
-        <form class="ai-advisor__chat-form" novalidate>
-          <label for="ai-message">Your question</label>
-          <textarea id="ai-message" name="message" rows="3" placeholder="Example: How can we reduce manual reporting work?" required></textarea>
-          <button type="submit" class="btn btn-primary">Get Advice</button>
-        </form>
-
-        <div class="ai-advisor__status" aria-live="polite"></div>
-        <div class="ai-advisor__response" hidden></div>
-
-        <div class="ai-advisor__cta" hidden>
-          <p class="ai-advisor__lead-prompt" hidden></p>
-          <a class="btn" href="discovery.html">Schedule a Discovery Call</a>
+          <form class="ai-advisor__chat-form" novalidate>
+            <label for="ai-message" class="sr-only">Your question</label>
+            <textarea id="ai-message" name="message" rows="3" placeholder="Example: How can we reduce manual reporting work?" required></textarea>
+            <button type="submit" class="btn btn-primary">Send</button>
+          </form>
         </div>
       </section>
     `;
@@ -82,9 +76,11 @@
     const panel = widget.querySelector('.ai-advisor__panel');
     const closeButton = widget.querySelector('.ai-advisor__close');
     const chatForm = widget.querySelector('.ai-advisor__chat-form');
-    const status = widget.querySelector('.ai-advisor__status');
-    const response = widget.querySelector('.ai-advisor__response');
-    const cta = widget.querySelector('.ai-advisor__cta');
+    const messageInput = chatForm.querySelector('textarea[name="message"]');
+    const messagesContainer = widget.querySelector('.ai-advisor__messages');
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+    const messages = [];
+    let loading = false;
 
     function openPanel() {
       panel.hidden = false;
@@ -107,12 +103,26 @@
 
     chatForm.addEventListener('submit', async function (event) {
       event.preventDefault();
-      const message = chatForm.message.value.trim();
+      submitMessage();
+    });
+
+    messageInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        submitMessage();
+      }
+    });
+
+    async function submitMessage() {
+      if (loading) return;
+
+      const message = messageInput.value.trim();
       if (!message) return;
 
-      status.textContent = 'Thinking...';
-      response.hidden = true;
-      cta.hidden = true;
+      messages.push({ role: 'user', text: message });
+      messageInput.value = '';
+      loading = true;
+      renderMessages();
 
       try {
         const res = await fetch(`${apiBase}/advisor/chat`, {
@@ -123,31 +133,47 @@
 
         if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
         const data = await res.json();
-        renderResponse(response, data);
-        response.hidden = false;
-        status.textContent = '';
-        cta.hidden = true;
+        messages.push({ role: 'advisor', text: getAdvisorText(data) });
       } catch (error) {
         console.warn('AI advisor request failed.', error);
-        status.textContent = 'Sorry, the AI Advisor is temporarily unavailable. Please try again in a moment or schedule a discovery call.';
+        messages.push({ role: 'advisor', text: 'Sorry, I had trouble getting a response. Please try again.' });
+      } finally {
+        loading = false;
+        renderMessages();
+        messageInput.focus();
       }
-    });
+    }
+
+    function renderMessages() {
+      const renderedMessages = messages.map(function (message) {
+        return `
+          <div class="ai-advisor__message ai-advisor__message--${message.role}">
+            ${escapeHtml(message.text)}
+          </div>
+        `;
+      }).join('');
+
+      const loadingMessage = loading
+        ? '<div class="ai-advisor__message ai-advisor__message--advisor">Thinking...</div>'
+        : '';
+
+      messagesContainer.innerHTML = renderedMessages + loadingMessage;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      if (submitButton) {
+        submitButton.disabled = loading;
+        submitButton.textContent = loading ? 'Sending...' : 'Send';
+      }
+    }
 
   }
 
-  function renderResponse(container, data) {
-    const mainAdvisorText = getFirstText(
+  function getAdvisorText(data) {
+    return getFirstText(
       data.response,
       data.userFacingResponse,
       data.summary
     ) || 'Sorry, I could not generate a response.';
-
-    container.innerHTML = `
-      <article>
-        <h3>Advisor response</h3>
-        <p>${escapeHtml(mainAdvisorText)}</p>
-      </article>
-    `;
   }
 
   function getFirstText() {
