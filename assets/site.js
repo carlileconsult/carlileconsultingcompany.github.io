@@ -85,7 +85,6 @@
     const status = widget.querySelector('.ai-advisor__status');
     const response = widget.querySelector('.ai-advisor__response');
     const cta = widget.querySelector('.ai-advisor__cta');
-    const leadPrompt = widget.querySelector('.ai-advisor__lead-prompt');
 
     function openPanel() {
       panel.hidden = false;
@@ -124,10 +123,10 @@
 
         if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
         const data = await res.json();
-        renderResponse(response, data, leadPrompt);
+        renderResponse(response, data);
         response.hidden = false;
         status.textContent = '';
-        cta.hidden = false;
+        cta.hidden = true;
       } catch (error) {
         console.warn('AI advisor request failed.', error);
         status.textContent = 'Sorry, the AI Advisor is temporarily unavailable. Please try again in a moment or schedule a discovery call.';
@@ -136,56 +135,17 @@
 
   }
 
-  function renderResponse(container, data, leadPrompt) {
-    const mainAdvisorText = getFirstText(data.userFacingResponse, data.response, data.summary) || 'I could not generate guidance for this request.';
-    const opportunityArea = getFirstText(data.opportunityArea);
-    const recommendedNextStep = getFirstText(data.recommendedNextStep);
-    const callToAction = getFirstText(data.callToAction);
-    const leadCapturePrompt = getFirstText(data.leadCapturePrompt);
-    const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
-    const risks = Array.isArray(data.risks) ? data.risks : [];
-    const followUpQuestions = normalizeList(data.followUpQuestions);
-
-    const recommendationsHtml = recommendations.length
-      ? `<h3>Recommended next steps</h3><ul>${recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
-      : '';
-
-    const risksHtml = risks.length
-      ? `<h3>Implementation considerations</h3><ul>${risks.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
-      : '';
-
-    const opportunityAreaHtml = opportunityArea
-      ? `<h3>Opportunity area</h3><p>${escapeHtml(opportunityArea)}</p>`
-      : '';
-
-    const nextStepHtml = recommendedNextStep
-      ? `<h3>Recommended next step</h3><p>${escapeHtml(recommendedNextStep)}</p>`
-      : '';
-
-    const followUpQuestionsHtml = followUpQuestions.length
-      ? `<h3>Helpful follow-up questions</h3><ul>${followUpQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
-      : '';
-
-    const callToActionHtml = callToAction
-      ? `<h3>Suggested action</h3><p>${escapeHtml(callToAction)}</p>`
-      : '';
-
-    if (leadPrompt) {
-      const shouldShowLeadPrompt = data.leadCaptureSuggested === true && leadCapturePrompt;
-      leadPrompt.textContent = shouldShowLeadPrompt ? leadCapturePrompt : '';
-      leadPrompt.hidden = !shouldShowLeadPrompt;
-    }
+  function renderResponse(container, data) {
+    const mainAdvisorText = getFirstText(
+      data.response,
+      data.userFacingResponse,
+      data.summary
+    ) || 'Sorry, I could not generate a response.';
 
     container.innerHTML = `
       <article>
         <h3>Advisor response</h3>
         <p>${escapeHtml(mainAdvisorText)}</p>
-        ${opportunityAreaHtml}
-        ${nextStepHtml}
-        ${recommendationsHtml}
-        ${risksHtml}
-        ${followUpQuestionsHtml}
-        ${callToActionHtml}
       </article>
     `;
   }
@@ -195,14 +155,6 @@
       if (typeof value === 'string' && value.trim()) return value.trim();
     }
     return '';
-  }
-
-  function normalizeList(value) {
-    if (!Array.isArray(value)) return [];
-    return value
-      .filter((item) => typeof item === 'string')
-      .map((item) => item.trim())
-      .filter(Boolean);
   }
 
   function escapeHtml(value) {
