@@ -462,6 +462,12 @@ select:focus {
   border-top: 1px solid var(--line);
 }
 
+.ai-advisor__lead-prompt {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 @media (max-width: 640px) {
   .ai-advisor {
     right: 12px;
