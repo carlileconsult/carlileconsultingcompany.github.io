@@ -71,6 +71,7 @@
         <div class="ai-advisor__response" hidden></div>
 
         <div class="ai-advisor__cta" hidden>
+          <p class="ai-advisor__lead-prompt" hidden></p>
           <a class="btn" href="discovery.html">Schedule a Discovery Call</a>
         </div>
       </section>
@@ -84,6 +85,7 @@
     const status = widget.querySelector('.ai-advisor__status');
     const response = widget.querySelector('.ai-advisor__response');
     const cta = widget.querySelector('.ai-advisor__cta');
+    const leadPrompt = widget.querySelector('.ai-advisor__lead-prompt');
 
     function openPanel() {
       panel.hidden = false;
@@ -122,7 +124,7 @@
 
         if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
         const data = await res.json();
-        renderResponse(response, data);
+        renderResponse(response, data, leadPrompt);
         response.hidden = false;
         status.textContent = '';
         cta.hidden = false;
@@ -134,12 +136,12 @@
 
   }
 
-  function renderResponse(container, data) {
-    const summary = getFirstText(data.summary, data.responseSummary, data.message) || 'Here are practical next steps based on your request.';
+  function renderResponse(container, data, leadPrompt) {
+    const mainAdvisorText = getFirstText(data.userFacingResponse, data.response, data.summary) || 'I could not generate guidance for this request.';
     const opportunityArea = getFirstText(data.opportunityArea);
     const recommendedNextStep = getFirstText(data.recommendedNextStep);
-    const consultingFit = getFirstText(data.consultingFit);
     const callToAction = getFirstText(data.callToAction);
+    const leadCapturePrompt = getFirstText(data.leadCapturePrompt);
     const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
     const risks = Array.isArray(data.risks) ? data.risks : [];
     const followUpQuestions = normalizeList(data.followUpQuestions);
@@ -160,10 +162,6 @@
       ? `<h3>Recommended next step</h3><p>${escapeHtml(recommendedNextStep)}</p>`
       : '';
 
-    const consultingFitHtml = consultingFit
-      ? `<h3>Consulting fit</h3><p>${escapeHtml(consultingFit)}</p>`
-      : '';
-
     const followUpQuestionsHtml = followUpQuestions.length
       ? `<h3>Helpful follow-up questions</h3><ul>${followUpQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
       : '';
@@ -172,13 +170,18 @@
       ? `<h3>Suggested action</h3><p>${escapeHtml(callToAction)}</p>`
       : '';
 
+    if (leadPrompt) {
+      const shouldShowLeadPrompt = data.leadCaptureSuggested === true && leadCapturePrompt;
+      leadPrompt.textContent = shouldShowLeadPrompt ? leadCapturePrompt : '';
+      leadPrompt.hidden = !shouldShowLeadPrompt;
+    }
+
     container.innerHTML = `
       <article>
-        <h3>Advisor summary</h3>
-        <p>${escapeHtml(summary)}</p>
+        <h3>Advisor response</h3>
+        <p>${escapeHtml(mainAdvisorText)}</p>
         ${opportunityAreaHtml}
         ${nextStepHtml}
-        ${consultingFitHtml}
         ${recommendationsHtml}
         ${risksHtml}
         ${followUpQuestionsHtml}
