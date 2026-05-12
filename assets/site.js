@@ -80,6 +80,7 @@
     const messagesContainer = widget.querySelector('.ai-advisor__messages');
     const submitButton = chatForm.querySelector('button[type="submit"]');
     const messages = [];
+    const historyLimit = 8;
     let loading = false;
 
     function openPanel() {
@@ -119,6 +120,8 @@
       const message = messageInput.value.trim();
       if (!message) return;
 
+      const history = getRecentConversationHistory(messages, historyLimit);
+
       messages.push({ role: 'user', text: message });
       messageInput.value = '';
       loading = true;
@@ -128,7 +131,7 @@
         const res = await fetch(`${apiBase}/advisor/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, source: 'website_widget' })
+          body: JSON.stringify({ message, history, source: 'website_widget' })
         });
 
         if (!res.ok) throw new Error(`Service unavailable (${res.status})`);
@@ -142,6 +145,15 @@
         renderMessages();
         messageInput.focus();
       }
+    }
+
+    function getRecentConversationHistory(chatMessages, limit) {
+      return chatMessages.slice(-limit).map(function (chatMessage) {
+        return {
+          role: chatMessage.role === 'advisor' ? 'assistant' : 'user',
+          content: chatMessage.text
+        };
+      });
     }
 
     function renderMessages() {
