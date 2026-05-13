@@ -503,7 +503,7 @@ select:focus {
   padding: 11px 13px;
   line-height: 1.5;
   text-align: left;
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
 }
 
 .ai-advisor__message--user {
