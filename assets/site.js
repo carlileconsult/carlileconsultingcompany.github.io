@@ -57,7 +57,10 @@
       <section id="ai-advisor-panel" class="ai-advisor__panel" hidden>
         <div class="ai-advisor__header">
           <h2>Carlile AI Advisor</h2>
-          <button type="button" class="ai-advisor__close" aria-label="Close advisor">×</button>
+          <div class="ai-advisor__header-actions">
+            <button type="button" class="ai-advisor__clear">Start over</button>
+            <button type="button" class="ai-advisor__close" aria-label="Close advisor">×</button>
+          </div>
         </div>
         <div class="ai-advisor__chat">
           <div class="ai-advisor__messages" aria-live="polite"></div>
@@ -75,6 +78,7 @@
     const toggleButton = widget.querySelector('.ai-advisor__toggle');
     const panel = widget.querySelector('.ai-advisor__panel');
     const closeButton = widget.querySelector('.ai-advisor__close');
+    const clearButton = widget.querySelector('.ai-advisor__clear');
     const chatForm = widget.querySelector('.ai-advisor__chat-form');
     const messageInput = chatForm.querySelector('textarea[name="message"]');
     const messagesContainer = widget.querySelector('.ai-advisor__messages');
@@ -101,6 +105,14 @@
     });
 
     closeButton.addEventListener('click', closePanel);
+
+    clearButton.addEventListener('click', function () {
+      messages.length = 0;
+      loading = false;
+      messageInput.value = '';
+      renderMessages();
+      messageInput.focus();
+    });
 
     chatForm.addEventListener('submit', async function (event) {
       event.preventDefault();
@@ -170,13 +182,25 @@
         : '';
 
       messagesContainer.innerHTML = renderedMessages + loadingMessage;
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      scrollMessagesToBottom();
 
       if (submitButton) {
         submitButton.disabled = loading;
         submitButton.textContent = loading ? 'Sending...' : 'Send';
       }
+
+      if (clearButton) {
+        clearButton.disabled = loading || messages.length === 0;
+      }
     }
+
+    function scrollMessagesToBottom() {
+      requestAnimationFrame(function () {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      });
+    }
+
+    renderMessages();
 
   }
 
